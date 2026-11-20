@@ -160,6 +160,7 @@ if SERVER then
 			self.InnerShield.Projector = self.Projector
 			self.InnerShield:SetSizeClass(self:GetSizeClass())
 			self.InnerShield:SetPos(self:GetPos() - Vector(0, 0, 10))
+			JMod.SetEZowner(self.InnerShield, JMod.GetEZowner(self))
 
 			local Strength = self:GetMaxStrength()
 			self.InnerShield:SetMaxStrength(Strength)

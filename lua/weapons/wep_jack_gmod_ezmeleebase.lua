@@ -353,6 +353,7 @@ function SWEP:OnDrop()
 	end
 	Ent:SetPos(Pos)
 	Ent:SetAngles(Ang)
+	JMod.SetEZowner(Ent, self.EZdropper or self.Owner)
 	Ent:Spawn()
 	Ent:Activate()
 

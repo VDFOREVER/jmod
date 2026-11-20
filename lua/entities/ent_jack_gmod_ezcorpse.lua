@@ -63,6 +63,7 @@ if SERVER then
 		end
 		Ragdoll:SetPos(Ply:GetPos())
 		Ragdoll:SetAngles(Ply:GetAngles())
+		JMod.SetEZowner(Ragdoll, Ply)
 		Ragdoll:Spawn()
 		Ragdoll:Activate()
 		Ragdoll.IsEZcorpse = true
@@ -99,6 +100,7 @@ if SERVER then
 							NewRagdoll:SetModel(self.EZoriginalPlayerModel)
 							NewRagdoll:SetBodyGroups(self.BodyGroupValues)
 							NewRagdoll:SetColor(color_white)
+							JMod.SetEZowner(NewRagdoll, Ply)
 							NewRagdoll:Spawn()
 							NewRagdoll:Activate()
 							NewRagdoll.IsEZcorpse = true
@@ -135,6 +137,7 @@ if SERVER then
 						ArmorPiece:SetPos(Pos)
 						ArmorPiece:SetAngles(Ang)
 						ArmorPiece:SetOwner(self)
+						JMod.SetEZowner(ArmorPiece, Ply)
 						ArmorPiece:ManipulateBoneScale(0, ArmorInfo.siz)
 						ArmorPiece:SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS)
 						ArmorPiece:Spawn()
@@ -236,6 +239,7 @@ if SERVER then
 				GraveStone:SetModel("models/props_c17/gravestone002a.mdl")
 				GraveStone:SetPos(GraveTr.HitPos)
 				GraveStone:SetAngles(Angle(0, 0, 0))
+				JMod.SetEZowner(GraveStone, self.DeadPlayer or JMod.GetEZowner(self))
 				GraveStone:Spawn()
 				GraveStone:Activate()
 				local WeldTr = util.QuickTrace(GraveTr.HitPos + Vector(0, 0, 20), Vector(0, 0, -40), {GraveStone, self, self.EZragdoll})
@@ -279,6 +283,7 @@ if SERVER then
 					Skull:SetPos(Matty:GetTranslation())
 					Skull:SetAngles(Matty:GetAngles())
 					Skull:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+					JMod.SetEZowner(Skull, self.DeadPlayer or JMod.GetEZowner(self))
 					Skull:Spawn()
 					Skull:Activate()
 					SafeRemoveEntityDelayed(Skull, 10)

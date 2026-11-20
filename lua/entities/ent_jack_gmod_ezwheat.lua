@@ -71,6 +71,7 @@ if(SERVER)then
 				local Seedy = ents.Create("ent_jack_gmod_ezwheatseed")
 				Seedy:SetPos(self:LocalToWorld(SpawnPos + VectorRand(-50, 50)))
 				Seedy:SetAngles(AngleRand())
+				JMod.SetEZowner(Seedy, JMod.GetEZowner(self))
 				Seedy:Spawn()
 				Seedy:Activate()
 				if (self.Mutated) then

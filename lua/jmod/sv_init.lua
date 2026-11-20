@@ -456,6 +456,7 @@ local function OpenChute(ply)
 	ply:SetNW2Bool("EZparachuting", true)
 	local Chute = ents.Create("ent_jack_gmod_ezparachute")
 	Chute:SetPos(ply:GetPos())
+	JMod.SetEZowner(Chute, ply)
 	Chute:SetNW2Entity("Owner", ply)
 	for k, v in pairs(ply.EZarmor.items) do
 		local ArmorInfo = JMod.ArmorTable[v.name]
@@ -1151,6 +1152,7 @@ concommand.Add("jmod_debug_parachute", function(ply, cmd, args)
 	if IsValid(Ent) then
 		local Chute = ents.Create("ent_jack_gmod_ezparachute")
 		Chute:SetPos(Ent:GetPos())
+		JMod.SetEZowner(Chute, ply)
 		Chute:SetNW2Entity("Owner", Ent)
 		Chute.ParachuteName = "Parachute"
 		for k, v in pairs(ply.EZarmor.items) do
@@ -1172,6 +1174,7 @@ concommand.Add("jmod_debug_shieldbubble", function(ply, cmd, args)
 	local Tr = ply:GetEyeTrace()
 	local Ent = Tr.Entity
 	local Shieldbubble = ents.Create("ent_jack_gmod_bubble_shield")
+	JMod.SetEZowner(Shieldbubble, ply)
 	local SizeClass = tonumber(SizeClass)
 	if SizeClass then
 		Shieldbubble:SetSizeClass(SizeClass)

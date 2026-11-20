@@ -367,6 +367,12 @@ function SWEP:DetermineBuildPos(zOffset)
 end
 
 function SWEP:BuildItem(selectedBuild)
+	local Allowed, Message = JMod.CanCraft(self.Owner)
+	if not Allowed then
+		self:Msg(Message)
+		return false
+	end
+
 	local Built = false
 	local BuildInfo = self.Craftables[selectedBuild]
 	local Ent, Pos, Norm, SpawnAngle = self:DetermineBuildPos(BuildInfo.buildZoffset)
@@ -489,6 +495,12 @@ function SWEP:PrimaryAttack()
 	self:SetNextSecondaryFire(CurTime() + 1)
 
 	if SERVER then
+		local Allowed, Message = JMod.CanCraft(self.Owner)
+		if not Allowed then
+			self:Msg(Message)
+			return
+		end
+
 		local Built, Upgraded, SelectedBuild = false, false, self:GetSelectedBuild()
 		local Ent, Pos, Norm = self:WhomIlookinAt(100)
 
@@ -581,6 +593,12 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:ModifyMachine(ent, tbl, ammoType)
+	local Allowed, Message = JMod.CanCraft(self.Owner)
+	if not Allowed then
+		self:Msg(Message)
+		return
+	end
+
 	local State = ent:GetState()
 	if State == -1 then
 		self:Msg("device must be repaired before modifying")
@@ -706,6 +724,12 @@ end
 
 function SWEP:Reload()
 	if SERVER then
+		local Allowed, Message = JMod.CanCraft(self.Owner)
+		if not Allowed then
+			self:Msg(Message)
+			return
+		end
+
 		local Time = CurTime()
 
 		if self.Owner:KeyDown(JMod.Config.General.AltFunctionKey) then
@@ -803,6 +827,7 @@ function SWEP:OnDrop()
 		end
 		Kit:SetPos(Pos)
 		Kit:SetAngles(Ang)
+		JMod.SetEZowner(Kit, self.EZdropper or self.Owner)
 		Kit:Spawn()
 		Kit:Activate()
 

@@ -164,6 +164,7 @@ if SERVER then
 		self.ProjTexLight = ents.Create("ent_jack_projtexlight")
 		self.ProjTexLight:SetPos(self:GetPos() + self:GetUp() * 9)
 		self.ProjTexLight:SetAngles(self:GetAngles())
+		JMod.SetEZowner(self.ProjTexLight, JMod.GetEZowner(self))
 		self.ProjTexLight:SetParent(self)
 		self.ProjTexLight:Spawn()
 		self.ProjTexLight:Activate()

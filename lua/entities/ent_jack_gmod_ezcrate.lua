@@ -145,6 +145,7 @@ if SERVER then
 					local Box = ents.Create(self.ChildEntity)
 					Box:SetPos(Pos + self:GetUp() * 20)
 					Box:SetAngles(self:GetAngles())
+					JMod.SetEZowner(Box, JMod.GetEZowner(self))
 					Box:Spawn()
 					Box:Activate()
 				end
@@ -161,6 +162,7 @@ if SERVER then
 		local Box, Given = ents.Create(self.ChildEntity), math.min(Resource, 100 * JMod.Config.ResourceEconomy.MaxResourceMult)
 		Box:SetPos(self:GetPos() + self:GetUp() * 5)
 		Box:SetAngles(self:GetAngles())
+		JMod.SetEZowner(Box, JMod.GetEZowner(self))
 		Box:Spawn()
 		Box:Activate()
 		Box:SetEZsupplies(self:GetResourceType(), Given)

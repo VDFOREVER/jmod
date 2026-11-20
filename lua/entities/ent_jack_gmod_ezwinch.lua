@@ -145,6 +145,7 @@ if SERVER then
 		local Hooky = ents.Create("ent_jack_gmod_ezhook")
 		Hooky:SetPos(self:GetPos() + Vector(0, 0, 50)) -- Adjust the position as needed
 		Hooky:SetAngles(self:GetAngles())
+		JMod.SetEZowner(Hooky, JMod.GetEZowner(self))
 		Hooky.EZconnector = machine
 		Hooky.NextStick = CurTime() + 1
 		Hooky:Spawn()

@@ -352,6 +352,12 @@ end
 local PrimitiveBenchReqs = {[JMod.EZ_RESOURCE_TYPES.WOOD] = 25, [JMod.EZ_RESOURCE_TYPES.CERAMIC] = 15, [JMod.EZ_RESOURCE_TYPES.ALUMINUM] = 8}
 
 local Handcraft = function(ply, cmd, args)
+	local Allowed, Message = JMod.CanCraft(ply)
+	if not Allowed then
+		JMod.BuilderNotify(ply, Message)
+		return
+	end
+
 	local Pos = ply:GetPos()
 	local ScrapResources, LocalScrap = JMod.FindSuitableScrap(Pos, 200, ply)
 	local ResourcesFromResourceEntities = JMod.CountResourcesInRange(nil, nil, ply)
@@ -405,6 +411,13 @@ if SERVER then
 		concommand.Add("jmod_ez_"..v.name, function(ply, cmd, args)
 			if not (IsValid(ply) and ply:Alive()) then return end
 			if v.adminOnly and not(JMod.IsAdmin(ply)) then ply:PrintMessage(HUD_PRINTCENTER, "This command is admin only") return end
+
+			local Allowed, Message = JMod.CanUseCommand(ply, v.name)
+			if not Allowed then
+				JMod.BuilderNotify(ply, Message)
+				return
+			end
+
 			v.func(ply, cmd, args)
 		end, nil, v.helpTxt)
 	end

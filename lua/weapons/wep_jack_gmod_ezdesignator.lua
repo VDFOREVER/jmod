@@ -269,6 +269,7 @@ function SWEP:OnDrop()
 			end
 			Kit:SetPos(Pos)
 			Kit:SetAngles(Ang)
+			JMod.SetEZowner(Kit, Owner)
 			Kit:Spawn()
 			Kit:Activate()
 			Kit:GetPhysicsObject():SetVelocity(Owner:GetVelocity())

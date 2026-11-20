@@ -70,6 +70,9 @@ if(SERVER)then
 	end
 
 	function ENT:Use(activator)
+		local Allowed, Message = JMod.CanCraft(activator)
+		if not Allowed then JMod.BuilderNotify(activator, Message) return end
+
 		if(self:GetState() == STATE_FINE)then
 			if(self:GetElectricity() >= 10) and (self:GetGas() >= 8) and (self:GetWater() >= 4) and (self:GetChemicals() >= 4) then
 				net.Start("JMod_EZworkbench")
@@ -86,6 +89,9 @@ if(SERVER)then
 	end
 
 	function ENT:TryBuild(itemName, ply)
+		local Allowed, Message = JMod.CanCraft(ply)
+		if not Allowed then JMod.BuilderNotify(ply, Message) return end
+
 		local ItemInfo = self.Craftables[itemName]
 
 		if not(self:GetElectricity() >= 10) or not(self:GetGas() >= 8) or not(self:GetWater() >= 4) or not(self:GetChemicals() >= 4) then

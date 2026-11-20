@@ -183,6 +183,7 @@ if SERVER then
 			end
 
 			Spewn:SetPos(self:GetPos())
+			JMod.SetEZowner(Spewn, JMod.GetEZowner(self))
 			Spewn:Spawn()
 			Spewn:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity() + VectorRand() * 250)
 			self:EmitSound("snd_jack_spoonfling.ogg", 60, math.random(90, 110))

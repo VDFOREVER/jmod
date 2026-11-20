@@ -103,6 +103,9 @@ if(SERVER)then
 	end
 
 	function ENT:Use(activator)
+		local Allowed, Message = JMod.CanUseMachine(activator, self)
+		if not Allowed then JMod.BuilderNotify(activator, Message) return end
+
 		local Alt = activator and JMod.IsAltUsing(activator)
 		local State = self:GetState()
 		if not IsValid(JMod.GetEZowner(self)) then 
@@ -243,7 +246,15 @@ if(SERVER)then
 			if (IsValid(Ent) and Ent:IsPlayerHolding()) then Held = true end
 			if (data.Speed > 50) then
 				if Held then
-					self:SalvageProp(Ent, nil, Pos)
+					local Holder = Ent.GetPhysicsAttacker and Ent:GetPhysicsAttacker(0)
+					local Allowed, Message = JMod.CanDismantle(Holder, Ent)
+
+					if not Allowed then
+						if IsValid(Holder) then JMod.BuilderNotify(Holder, Message) end
+						return
+					end
+
+					self:SalvageProp(Ent, Holder, Pos)
 				end
 				self:EmitSound("Wood.ImpactHard")
 				if (data.Speed > 500) then
@@ -286,6 +297,13 @@ if(SERVER)then
 
 	function ENT:SalvageProp(ent, ply, pos)
 		if not (IsValid(ent) and IsValid(ent:GetPhysicsObject())) then return end
+
+		local Allowed, Message = JMod.CanDismantle(ply, ent)
+		if not Allowed then
+			if IsValid(ply) then JMod.BuilderNotify(ply, Message) end
+			return
+		end
+
 		pos = pos or ent:GetPos()
 
 		local EntPhys = ent:GetPhysicsObject()
@@ -325,12 +343,16 @@ if(SERVER)then
 
 	function ENT:ScrapInv(ply, scrapInvEntity)
 		if not IsValid(ply) then return end
+
+		local Allowed, Message = JMod.CanDismantle(ply, nil)
+		if not Allowed then JMod.BuilderNotify(ply, Message) return end
+
 		if ply:GetPos():Distance(self:GetPos()) > 200 then return end
 		if not ply.JModInv then return end
 		local PropScrapAmount = #ply.JModInv.items
 		for k, entInfo in pairs(ply.JModInv.items) do
 			local ent = entInfo.ent
-			if CanSalvage(ent) then
+			if CanSalvage(ent) and not JMod.IsBuilderProp(ent) then
 				timer.Simple(0.25 * k, function()
 					if not IsValid(self) or not IsValid(ent) or not IsValid(ply) or (ply:GetPos():Distance(self:GetPos()) > 200) then return end
 					ent = JMod.RemoveFromInventory(ply, ent, self:GetPos() + self:GetUp() * 50)
@@ -383,6 +405,9 @@ if(SERVER)then
 	end
 
 	function ENT:TryBuild(itemName, ply)
+		local Allowed, Message = JMod.CanCraft(ply)
+		if not Allowed then JMod.BuilderNotify(ply, Message) return end
+
 		local ItemInfo=self.Craftables[itemName]
 
 		local EnoughStuff, StuffLeft = JMod.HaveResourcesToPerformTask(nil,200,ItemInfo.craftingReqs,self,nil,(not(ItemInfo.noRequirementScaling) and self.ResourceReqMult) or 1)

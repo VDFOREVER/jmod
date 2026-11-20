@@ -65,6 +65,7 @@ if(SERVER)then
 		Ang:RotateAroundAxis(Up, -90)
 		Ang:RotateAroundAxis(Forward, -85)
 		self.Pod:SetAngles(Ang)
+		JMod.SetEZowner(self.Pod, JMod.GetEZowner(self))
 		self.Pod:Spawn()
 		self.Pod:Activate()
 		self.Pod:SetParent(self)

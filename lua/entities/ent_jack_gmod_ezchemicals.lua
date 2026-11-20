@@ -43,7 +43,7 @@ if SERVER then
 					Blob:SetPos(pos)
 					Blob:SetAngles(VectorRand():Angle())
 					Blob:SetVelocity((VectorRand() + vector_up) * math.Rand(0, 500))
-					Blob:SetOwner(game.GetWorld())
+					JMod.SetEZowner(Blob, JMod.GetEZowner(self))
 					Blob:Spawn()
 					Blob:Activate()
 				end

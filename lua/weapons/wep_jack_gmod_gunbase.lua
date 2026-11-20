@@ -576,6 +576,7 @@ function SWEP:OnDrop()
 			local Ent = ents.Create(Specs.ent)
 			Ent:SetPos(Pos)
 			Ent:SetAngles(Ang)
+			JMod.SetEZowner(Ent, self.EZdropper or self.Owner)
 			Ent.MagRounds = self:Clip1()
 			if self:Clip2() > 0 then
 				Ent.MorRounds = self:Clip2()

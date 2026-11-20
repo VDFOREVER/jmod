@@ -197,8 +197,11 @@ if SERVER then
 		end
 
 		if vFireInstalled then
+			local Attacker = self:GetOwner()
+			if not IsValid(Attacker) then Attacker = JMod.GetEZowner(self) end
+
 			for i = 1, math.random(6, 9) do
-				CreateVFireBall(math.random(3, 5), math.random(3, 5), self:GetPos(), VectorRand() * math.random(400, 600), self:GetOwner())
+				CreateVFireBall(math.random(3, 5), math.random(3, 5), self:GetPos(), VectorRand() * math.random(400, 600), Attacker)
 			end
 		end
 

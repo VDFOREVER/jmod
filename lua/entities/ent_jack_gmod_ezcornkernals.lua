@@ -27,6 +27,7 @@ if SERVER then
 		local ent = ents.Create(self.ClassName)
 		ent:SetAngles(Angle(0, 0, 0))
 		ent:SetPos(SpawnPos)
+		JMod.SetEZowner(ent, ply)
 		ent:Spawn()
 		ent:Activate()
 
@@ -122,6 +123,7 @@ if SERVER then
 		if not(self.NoMorePop) and (State == STATE_NORMAL) and dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_SLOWBURN) and (math.random(1, 10) >= 4) then
 			local Pop = ents.Create("ent_jack_gmod_ezpopcorn")
 			Pop:SetPos(self:GetPos())
+			JMod.SetEZowner(Pop, JMod.GetEZowner(self))
 			Pop:Spawn()
 			Pop:Activate()
 			self:EmitSound("garrysmod/balloon_pop_cute.wav", 60, math.random(70, 130))

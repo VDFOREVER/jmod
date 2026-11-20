@@ -135,6 +135,7 @@ if SERVER then
 		local Spewn = ents.Create("ent_jack_spoon")
 		Spewn.Model = "models/jmod/explosives/grenades/sticknade/stick_grenade_cap.mdl"
 		Spewn:SetPos(self:GetPos())
+		JMod.SetEZowner(Spewn, JMod.GetEZowner(self))
 		Spewn:Spawn()
 		Spewn:GetPhysicsObject():SetVelocity(self:GetPhysicsObject():GetVelocity() + VectorRand() * 250)
 	end

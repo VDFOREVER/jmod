@@ -148,6 +148,20 @@ net.Receive("JMod_EZworkbench", function(l, ply)
 	if not (IsValid(ply) and ply:Alive()) then return end
 	local bench, name = net.ReadEntity(), net.ReadString()
 	if not IsValid(bench) then return end
+
+	local Allowed, Message
+
+	if name == "JMOD_SCRAPINV" then
+		Allowed, Message = JMod.CanDismantle(ply, nil)
+	else
+		Allowed, Message = JMod.CanCraft(ply)
+	end
+
+	if not Allowed then
+		JMod.BuilderNotify(ply, Message)
+		return
+	end
+
 	if name == "JMOD_SCRAPINV" and bench.ScrapInv then
 		bench:ScrapInv(ply)
 	elseif bench.TryBuild and ply:GetPos():Distance(bench:GetPos()) < 300 then
@@ -171,6 +185,13 @@ end)
 
 net.Receive("JMod_ModifyMachine", function(ln, ply)
 	if not ply:Alive() then return end
+
+	local Allowed, Message = JMod.CanCraft(ply)
+	if not Allowed then
+		JMod.BuilderNotify(ply, Message)
+		return
+	end
+
 	local AmmoType = nil
 	local Ent, Tbl, HasAmmoType = net.ReadEntity(), net.ReadTable(), tobool(net.ReadBit())
 

@@ -155,6 +155,7 @@ if(SERVER)then
 		local Pos = self:GetPos() - self:GetUp() * 120
 		self.Shield = ents.Create("ent_jack_gmod_bubble_shield")
 		self.Shield:SetPos(Pos)
+		JMod.SetEZowner(self.Shield, JMod.GetEZowner(self))
 		self.Shield.Projector = self
 		self.Shield:SetSizeClass(self:GetGrade())
 

@@ -101,6 +101,7 @@ if SERVER then
 		if (JMod.Config.QoL.NukeFlashLightEnabled) then
 			local NukeFlash = ents.Create("ent_jack_gmod_nukeflash")
 			NukeFlash:SetPos(SelfPos + Vector(0, 0, 32))
+			JMod.SetEZowner(NukeFlash, JMod.GetEZowner(self))
 			NukeFlash.LifeDuration = 10
 			NukeFlash:Spawn()
 			NukeFlash:Activate()

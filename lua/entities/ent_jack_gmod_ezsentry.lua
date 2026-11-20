@@ -1129,6 +1129,7 @@ if(SERVER)then
 			local Shell = ents.Create("ent_jack_gmod_ez40mmshell")
 			Shell:SetPos(SelfPos + Up * 36 + AimForward * 5)
 			Shell:SetAngles(AngleRand())
+			JMod.SetEZowner(Shell, JMod.GetEZowner(self))
 			Shell:Spawn()
 			Shell:Activate()
 			constraint.NoCollide(Shell, self, 0, 0)
@@ -1204,7 +1205,11 @@ if(SERVER)then
 			Rocket:SetPos(ShootPos)
 			ShootAng:RotateAroundAxis(ShootAng:Up(), -90)
 			Rocket:SetAngles(ShootAng)
-			JMod.SetEZowner(Rocket, JMod.GetEZowner(self) or self)
+			local RocketOwner = JMod.GetEZowner(self) or self
+			JMod.SetEZowner(Rocket, RocketOwner)
+			if IsValid(RocketOwner) and RocketOwner:IsPlayer() then
+				Rocket:SetOwner(RocketOwner)
+			end
 			Rocket.Damage = Dmg * (AmmoConsume / 5)
 			Rocket.CurVel = self:GetVelocity() + ShootDir * Speed
 			Rocket:Spawn()

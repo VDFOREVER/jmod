@@ -139,6 +139,7 @@ hook.Add("Think", "JMod_RADIO_THINK", function()
 					timer.Simple(.9, function()
 						local Box = ents.Create("ent_jack_aidbox")
 						Box:SetPos(DropPos)
+						JMod.SetEZowner(Box, JMod.GetEZowner(station.lastCaller))
 						Box.InitialVel = -DropVelocity * math.random(1, 3)
 						Box.Contents = DeliveryItems
 						Box.NoFadeIn = true
@@ -422,6 +423,7 @@ concommand.Add("jmod_airdropplayer", function(ply, cmd, args)
 		timer.Simple(0.9, function()
 			local Box = ents.Create("ent_jack_aidbox")
 			Box:SetPos(DropPos)
+			JMod.SetEZowner(Box, TargetPly)
 			Box.InitialVel = -DropVelocity * 10
 			--Box.Contents = {"ent_jack_gmod_eztoolbox"}
 			Box.NoFadeIn = true

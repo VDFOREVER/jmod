@@ -106,6 +106,7 @@ if SERVER then
 			Gib:SetModel("models/props_junk/wood_crate001a_chunk0" .. table.Random(GibNums) .. ".mdl")
 			Gib:SetPos(Pos + VectorRand() * 30 + Vector(0, 0, 10))
 			Gib:SetAngles(Ang)
+			JMod.SetEZowner(Gib, JMod.GetEZowner(self))
 			Gib:Spawn()
 			Gib:Activate()
 			Gib:SetCollisionGroup(COLLISION_GROUP_WORLD)
@@ -118,12 +119,14 @@ if SERVER then
 		--if(true)then return end
 		if self.SUCCd then return end
 		local Pos, Ang, Up, Right, Forward, Class, Vel = self:GetPos(), self:GetAngles(), self:GetUp(), self:GetRight(), self:GetForward(), self.ClassName, self:GetVelocity()
+		local ChildOwner = JMod.GetEZowner(self)
 
 		timer.Simple(0, function()
 			local Box1 = ents.Create(Class)
 			Box1:SetPos(Pos + Right * 20)
 			Ang:RotateAroundAxis(Up, 90)
 			Box1:SetAngles(Ang)
+			JMod.SetEZowner(Box1, ChildOwner)
 			Box1:Spawn()
 			Box1:Activate()
 
@@ -135,6 +138,7 @@ if SERVER then
 			Box2:SetPos(Pos - Right * 20)
 			Ang:RotateAroundAxis(Up, 180)
 			Box2:SetAngles(Ang)
+			JMod.SetEZowner(Box2, ChildOwner)
 			Box2:Spawn()
 			Box2:Activate()
 

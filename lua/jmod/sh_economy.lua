@@ -766,6 +766,9 @@ end
 
 function JMod.GetSalvageYield(ent)
 	if not IsValid(ent) then return {}, "" end
+	if SERVER and JMod.IsBuilderProp and JMod.IsBuilderProp(ent) then
+		return {}, "Нельзя разбирать собственность билдера"
+	end
 	if ent.GetState and (ent:GetState() >= 1) then return {}, "bruh, it's active" end
 
 	local Class, Mdl = string.lower(ent:GetClass()), string.lower(ent:GetModel())
@@ -1412,6 +1415,12 @@ if SERVER then
 	local ScroungedPositions = {}
 
 	function JMod.EZ_ScroungeArea(ply, cmd, args)
+		local Allowed, Message = JMod.CanGatherResources(ply)
+		if not Allowed then
+			JMod.BuilderNotify(ply, Message)
+			return
+		end
+
 		local Time = CurTime()
 		local Debug = (args and args[1]) or false --JMod.IsAdmin(ply) and GetConVar("sv_cheats"):GetBool()
 

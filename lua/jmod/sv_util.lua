@@ -64,40 +64,89 @@ function JMod.EmitAIsound(pos, vol, dur, typ)
 	SafeRemoveEntityDelayed(snd, dur + .5)
 end
 
+local function ValidEntity(value)
+	return type(value) == "Entity" and IsValid(value)
+end
+
 function JMod.GetEZowner(ent)
 	if not IsValid(ent) then return game.GetWorld() end
 
-	if ent.EZowner and IsValid(ent.EZowner) then
-
+	if ValidEntity(ent.EZowner) then
 		return ent.EZowner
 	elseif ent:IsPlayer() then
-			
-		return ent	
-	else
-		
-		return game.GetWorld()
+		return ent
 	end
+
+	if ent.EZownerID then
+		local IDOwner = player.GetBySteamID64(ent.EZownerID)
+		if IsValid(IDOwner) then return IDOwner end
+	end
+
+	if ValidEntity(ent.DeadPlayer) and ent.DeadPlayer:IsPlayer() then return ent.DeadPlayer end
+	if ValidEntity(ent.Owner) and ent.Owner:IsPlayer() then return ent.Owner end
+
+	-- Fallback 1: engine owner (weapons, projectiles, NPCs, props)
+	local EngineOwner = ent.GetOwner and ent:GetOwner()
+	if ValidEntity(EngineOwner) and EngineOwner ~= ent then
+		if EngineOwner:IsPlayer() then return EngineOwner end
+		if ValidEntity(EngineOwner.EZowner) then return EngineOwner.EZowner end
+	end
+
+	-- Fallback 2: entity creator (spawnmenu, crafting, duplicator)
+	local Creator = ent.GetCreator and ent:GetCreator()
+	if ValidEntity(Creator) and Creator ~= ent then
+		if Creator:IsPlayer() then return Creator end
+		if ValidEntity(Creator.EZowner) then return Creator.EZowner end
+	end
+
+	-- Fallback 3: JMod/custom creator field
+	if ValidEntity(ent.Creator) then
+		if ent.Creator:IsPlayer() then return ent.Creator end
+		if ValidEntity(ent.Creator.EZowner) then return ent.Creator.EZowner end
+	end
+
+	-- Fallback 4: parent entity (attachments, inventory items, child props)
+	local Parent = ent.GetParent and ent:GetParent()
+	if ValidEntity(Parent) and Parent ~= ent then
+		if ValidEntity(Parent.EZowner) then return Parent.EZowner end
+
+		local ParentOwner = Parent.GetOwner and Parent:GetOwner()
+		if ValidEntity(ParentOwner) and ParentOwner:IsPlayer() then return ParentOwner end
+	end
+
+	return game.GetWorld()
 end
 
 function JMod.SetEZowner(ent, newOwner, setColor)
 	if not IsValid(ent) then return end
 	if not (newOwner and IsValid(newOwner)) then newOwner = game.GetWorld() end
 
-	if JMod.GetEZowner(ent) == newOwner then
-		if setColor == true then
-			JMod.Colorify(ent)
-		end
+	local SameOwner = ent.EZowner == newOwner
 
-		return 
+	if not SameOwner then
+		ent.EZowner = newOwner
+		if newOwner:IsPlayer() then
+			ent.EZownerID = newOwner:SteamID64()
+			ent.EZownerTeam = newOwner:Team()
+		else
+			ent.EZownerID = nil
+			ent.EZownerTeam = nil
+		end
 	end
 
-	ent.EZowner = newOwner
 	if newOwner:IsPlayer() then
-		ent.EZownerID = newOwner:SteamID64()
-		ent.EZownerTeam = newOwner:Team()
+		ent.JModBuilderOwned = (JMod.IsBuilder and JMod.IsBuilder(newOwner)) or nil
 	else
-		ent.EZownerID = nil
-		ent.EZownerTeam = nil
+		ent.JModBuilderOwned = nil
+	end
+
+	-- ВАЖНО: не вызываем ent:SetOwner() для обычных пропов.
+	-- В GMod SetOwner отключает физическое взаимодействие с сущностью,
+	-- из-за чего пропы начинают проходить сквозь всё.
+	-- JMod-владелец хранится в EZowner/EZownerID, а creator нужен только
+	-- для наследования владельца дочерними сущностями.
+	if not ent:IsPlayer() and newOwner:IsPlayer() and isfunction(ent.SetCreator) then
+		ent:SetCreator(newOwner)
 	end
 
 	if setColor == true then
@@ -111,23 +160,27 @@ end
 
 function JMod.Colorify(ent)
 	if not (ent.EZcolorable and ent.EZcolorable == true) then return end
-	if IsValid(JMod.GetEZowner(ent)) then
-		if engine.ActiveGamemode() == "sandbox" and ent.EZowner:Team() == TEAM_UNASSIGNED then
-			local Col = ent.EZowner:GetPlayerColor()
-			ent:SetColor(Color(Col.x * 255, Col.y * 255, Col.z * 255))
-		else
-			local Tem = ent.EZowner:Team()
 
-			if Tem then
-				local Col = team.GetColor(Tem)
+	local Owner = JMod.GetEZowner(ent)
 
-				if Col then
-					ent:SetColor(Col)
-				end
+	if not (IsValid(Owner) and Owner:IsPlayer()) then
+		ent:SetColor(Color(255, 255, 255))
+		return
+	end
+
+	if engine.ActiveGamemode() == "sandbox" and Owner:Team() == TEAM_UNASSIGNED then
+		local Col = Owner:GetPlayerColor()
+		ent:SetColor(Color(Col.x * 255, Col.y * 255, Col.z * 255))
+	else
+		local Tem = Owner:Team()
+
+		if Tem then
+			local Col = team.GetColor(Tem)
+
+			if Col then
+				ent:SetColor(Col)
 			end
 		end
-	else
-		ent:SetColor(Color(255, 255, 255))
 	end
 end
 
@@ -401,7 +454,13 @@ end
 function JMod.EZprogressMining(ent, pos, deconstructor, mult, surfaceMat)
 	mult = mult or 1
 	local Time = CurTime()
-	
+
+	local Allowed, Message = JMod.CanGatherResources(deconstructor)
+	if not Allowed then
+		if IsValid(deconstructor) then JMod.BuilderNotify(deconstructor, Message) end
+		return Message
+	end
+
 	if not IsValid(ent) then return "Invalid Ent" end
 	
 	local CancelTaskMessage = hook.Run("JMod_EZprogressMining", ent, pos, deconstructor, mult)
@@ -530,6 +589,15 @@ end
 function JMod.EZprogressTask(ent, pos, deconstructor, task, mult)
 	mult = mult or 1
 	local Time = CurTime()
+
+	local Allowed, Message = JMod.CanDismantle(deconstructor, ent)
+	if not Allowed then
+		if IsValid(deconstructor) then
+			JMod.BuilderNotify(deconstructor, Message)
+		end
+
+		return Message
+	end
 
 	if not IsValid(ent) then return "Invalid Ent" end
 

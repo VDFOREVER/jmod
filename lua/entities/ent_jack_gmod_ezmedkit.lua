@@ -86,6 +86,7 @@ if SERVER then
 					Item:SetModel(mdl)
 					Item:SetPos(Pos + VectorRand() * 5 + Vector(0, 0, 10))
 					Item:SetAngles(VectorRand():Angle())
+					JMod.SetEZowner(Item, JMod.GetEZowner(self))
 					Item:Spawn()
 					Item:Activate()
 					Item:SetCollisionGroup(COLLISION_GROUP_DEBRIS)

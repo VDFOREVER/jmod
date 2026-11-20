@@ -281,6 +281,7 @@ if(SERVER)then
 				local Rock = ents.Create("prop_physics")
 				Rock:SetModel("models/props_junk/rock001a.mdl")
 				Rock:SetPos(SelfPos + Up * -90 * HullTr.Fraction)
+				JMod.SetEZowner(Rock, JMod.GetEZowner(self))
 				Rock:Spawn()
 				Rock:Activate()
 

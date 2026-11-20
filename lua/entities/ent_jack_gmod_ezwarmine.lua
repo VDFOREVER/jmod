@@ -269,6 +269,7 @@ if SERVER then
 		self.NextFlareFire = CurTime() + 10
 		local Flare = ents.Create("ent_jack_gmod_ezflareprojectile")
 		Flare:SetPos(self:GetPos() + Vector(0, 0, 15))
+		JMod.SetEZowner(Flare, JMod.GetEZowner(self))
 		Flare:Spawn()
 		Flare:Activate()
 		Flare:GetPhysicsObject():SetVelocity(Vector(0, 0, 1500) + VectorRand() * math.random(0, 100))

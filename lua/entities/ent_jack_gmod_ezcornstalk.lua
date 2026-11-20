@@ -60,6 +60,7 @@ if(SERVER)then
 				Corn:SetPos(self:GetPos() + (SpawnPos*i) + VectorRand(-10, 10))
 				Corn:SetAngles(AngleRand())
 				Corn.Mutated = self.Mutated
+				JMod.SetEZowner(Corn, JMod.GetEZowner(self))
 				Corn:Spawn()
 				Corn:Activate()
 			end

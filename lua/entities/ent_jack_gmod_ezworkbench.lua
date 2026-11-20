@@ -70,6 +70,9 @@ if(SERVER)then
 	end
 
 	function ENT:Use(activator)
+		local Allowed, Message = JMod.CanCraft(activator)
+		if not Allowed then JMod.BuilderNotify(activator, Message) return end
+
 		if(self:GetState() == STATE_FINE)then
 			if(self:GetElectricity() > 0 and self:GetGas() > 0)then
 				net.Start("JMod_EZworkbench")
@@ -87,6 +90,9 @@ if(SERVER)then
 	end
 
 	function ENT:TryBuild(itemName,ply)
+		local Allowed, Message = JMod.CanCraft(ply)
+		if not Allowed then JMod.BuilderNotify(ply, Message) return end
+
 		local ItemInfo=self.Craftables[itemName]
 
 		if(JMod.HaveResourcesToPerformTask(nil,nil,ItemInfo.craftingReqs,self))then

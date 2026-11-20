@@ -146,6 +146,7 @@ if SERVER then
 				local Pop = ents.Create("ent_jack_gmod_ezcornkernals")
 				Pop.Mutated = self.Mutated
 				Pop:SetPos(self:GetPos())
+				JMod.SetEZowner(Pop, JMod.GetEZowner(self))
 				Pop:Spawn()
 				Pop:Activate()
 				self:EmitSound("garrysmod/balloon_pop_cute.wav", 60, math.random(70, 130))

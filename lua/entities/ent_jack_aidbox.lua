@@ -44,6 +44,7 @@ if SERVER then
 		if self.Parachuted then
 			local Chute = ents.Create("ent_jack_gmod_ezparachute")
 			Chute:SetPos(self:LocalToWorld(self:OBBCenter()))
+			JMod.SetEZowner(Chute, JMod.GetEZowner(self))
 			Chute:SetNW2Entity("Owner", self)
 			Chute.ParachuteMdl = "models/jessev92/rnl/items/parachute_deployed.mdl"
 			Chute.Drag = JMod.Config.RadioSpecs.ParachuteDragMult
@@ -264,6 +265,7 @@ if SERVER then
 		Side:SetColor(Color(200, 200, 200, 255))
 		Side:SetPos(pos)
 		Side:SetAngles(ang)
+		JMod.SetEZowner(Side, JMod.GetEZowner(self))
 		Side:Spawn()
 		Side:Activate()
 		Side:GetPhysicsObject():SetMaterial("Default_silent")

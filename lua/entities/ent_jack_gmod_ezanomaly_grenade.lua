@@ -530,6 +530,7 @@ if SERVER then
 			end
 
 			Spewn:SetPos(self:GetPos())
+			JMod.SetEZowner(Spewn, JMod.GetEZowner(self))
 			Spewn:Spawn()
 			Spewn:SetMaterial(self.Material)
 			Spewn:SetColor(self:GetColor())

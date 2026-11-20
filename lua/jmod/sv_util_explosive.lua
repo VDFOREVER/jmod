@@ -333,6 +333,7 @@ function JMod.BlastThatDoor(ent, vel)
 		Replacement:SetModel(Moddel)
 		Replacement:SetPos(Pozishun + Vector(0, 0, 1))
 		Replacement:SetAngles(Ayngul)
+		JMod.SetEZowner(Replacement, JMod.GetEZowner(ent))
 
 		if Muteeriul then
 			Replacement:SetMaterial(Muteeriul)

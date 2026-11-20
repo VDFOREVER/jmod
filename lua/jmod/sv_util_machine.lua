@@ -59,6 +59,7 @@ function JMod.StartResourceConnection(machine, ply, resType)
 	if not IsValid(Plugy) then return end
 	Plugy:SetPos(machine:GetPos() + Vector(0, 0, 50)) -- Adjust the position as needed
 	Plugy:SetAngles(machine:GetAngles())
+	JMod.SetEZowner(Plugy, JMod.GetEZowner(machine))
 	Plugy.Model = "models/props_lab/tpplug.mdl"
 	Plugy.EZhookType = "Plugin"
 	Plugy.EZconnector = machine
@@ -342,6 +343,8 @@ function JMod.DistributePower(self)
 end
 
 function JMod.MachineSpawnResource(machine, resourceType, amount, relativeSpawnPos, relativeSpawnAngle, ejectionVector, findCrateRange)
+	if JMod.MachineBlockedForOwner and JMod.MachineBlockedForOwner(machine) then return end
+
 	amount = math.Round(amount)
 	if not(amount) or (amount < 1) then return end --print("[JMOD] " .. tostring(machine) .. " tried to produce a resource with 0 value") return end
 	machine.NextRefillTime = CurTime() + 1
@@ -486,6 +489,7 @@ function JMod.Bolt(ply)
 	Bolt:SetColor(Color(50, 50, 50))
 	Bolt:SetPos(Pos - Dir * 20)
 	Bolt:SetAngles(Dir:Angle())
+	JMod.SetEZowner(Bolt, ply)
 	Bolt:Spawn()
 	Bolt:Activate()
 	Bolt:SetParent(Ent1)
@@ -561,6 +565,7 @@ function JMod.Nail(ply)
 	Nail:SetColor(Color(50, 50, 50))
 	Nail:SetPos(Pos - Vec * 2)
 	Nail:SetAngles(Vec:Angle())
+	JMod.SetEZowner(Nail, ply)
 	Nail:Spawn()
 	Nail:Activate()
 	Nail:SetParent(Ent1)
@@ -624,6 +629,12 @@ function JMod.Package(packager)
 	local Ent, Message = JMod.GetPackagableObject(packager)
 
 	if Ent then
+		local Allowed, BlockMessage = JMod.CanDismantle(packager, Ent)
+		if not Allowed then
+			JMod.BuilderNotify(packager, BlockMessage)
+			return
+		end
+
 		JMod.PackageObject(Ent)
 		sound.Play("snds_jack_gmod/packagify.ogg", packager:GetPos(), 60, math.random(90, 110))
 
@@ -694,6 +705,12 @@ function JMod.Rope(ply, origin, dir, width, strength, mat)
 end
 
 function JMod.BuildRecipe(results, craftEnt, ply, Pos, Ang, skinNum)
+	local Allowed, Message = JMod.CanCraft(ply)
+	if not Allowed then
+		JMod.BuilderNotify(ply, Message)
+		return
+	end
+
 	local itemName
 	for k,v in pairs(JMod.Config.Craftables) do
 		if v.results == results then

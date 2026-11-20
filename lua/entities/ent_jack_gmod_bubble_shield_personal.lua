@@ -61,6 +61,7 @@ function ENT:SpawnFunction(ply, tr, ClassName)
 	local ent = ents.Create(ClassName)
 	ent:SetPos(ply:GetPos())
 	ent:SetPlayerOwner(ply)
+	JMod.SetEZowner(ent, ply)
 	ent:Spawn()
 	ent:Activate()
 
